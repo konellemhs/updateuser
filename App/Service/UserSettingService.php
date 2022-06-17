@@ -43,4 +43,32 @@ class UserSettingService
             )
         );
     }
+
+    /**
+     * @param UserSetting $userSetting
+     *
+     * @return UserSetting
+     */
+    public function deactivateUserSetting(UserSetting $userSetting)
+    {
+        $userSetting = $userSetting->deactivate();
+
+        $this->userSettingRepository->flush();
+
+        return $userSetting;
+    }
+
+    /**
+     * @param UserSetting $userSetting
+     *
+     * @return UserSetting
+     */
+    public function activateUserSetting(UserSetting $userSetting)
+    {
+        $userSetting = $userSetting->activate();
+
+        $this->userSettingRepository->flush();
+
+        return $userSetting;
+    }
 }

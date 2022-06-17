@@ -8,6 +8,8 @@ namespace App\Entity;
 final class UserSetting
 {
     /**
+     * автогенерируемый
+     *
      * @var int
      */
     private int $id;
@@ -66,6 +68,26 @@ final class UserSetting
         $this->value = $value;
         $this->isActive = $isActive;
         $this->code = $code;
+    }
+
+    /**
+     * @return UserSetting
+     */
+    public function activate(): self
+    {
+        $this->isActive = true;
+
+        return $this;
+    }
+
+    /**
+     * @return UserSetting
+     */
+    public function deactivate(): self
+    {
+        $this->isActive = false;
+
+        return $this;
     }
 
     /**

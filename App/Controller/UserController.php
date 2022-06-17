@@ -6,6 +6,8 @@ use App\DTO\UpdateUserSettingData;
 use App\Entity\User;
 use App\Entity\UserSetting;
 use App\Enum\ContactType;
+use App\Exception\ConfirmationCodeInvalidException;
+use App\Exception\EntityNotFoundException;
 use App\Facade\UserFacade;
 
 final class UserController
@@ -48,7 +50,19 @@ final class UserController
     }
 
     /**
-     * Получение контактов пользователя, запрос put /user/{id}/setting/id
+     * Получение активных настроек пользователя, запрос get /user/{id}/setting
+     *
+     * @param User $user
+     *
+     * @return array
+     */
+    public function getUserSettings(User $user): array
+    {
+        return $user->getActiveSettings();
+    }
+
+    /**
+     * Запрос создание код подтверждения смены настроек, запрос post /user/{id}/setting/{id}/code
      *
      * @param User                  $user
      * @param UserSetting           $userSetting
@@ -57,15 +71,39 @@ final class UserController
      *
      * @return array | null
      */
-    public function updateUserSetting(
+    public function createConfirmationCode(
         User $user,
         UserSetting $userSetting,
         UpdateUserSettingData $updateUserSettingData,
         ContactType $byContact
     ): ?array {
-        $this->facade->updateUserSettings($user, $userSetting, $updateUserSettingData->getValue(), $byContact);
+        $this->facade->createConfirmationCode($user, $userSetting, $updateUserSettingData->getValue(), $byContact);
 
         return null;
     }
 
+    /**
+     * Запрос подтверждения смены настроек, запрос put /user/{id}/setting/{id}/code/{code_value}
+     *
+     * @param User        $user
+     * @param UserSetting $userSetting
+     * @param string      $codeValue
+     *
+     * @return User
+     */
+    public function updateUserSettings(
+        User $user,
+        UserSetting $userSetting,
+        string $codeValue,
+    ): User {
+        try {
+            $this->facade->updateUserSettings($user, $userSetting, $codeValue);
+        } catch (ConfirmationCodeInvalidException $e) {
+            // 400, с кодом ошибки код невалидный
+        } catch (EntityNotFoundException $e) {
+            // 404 с кодом код не найден
+        }
+
+        return $user;
+    }
 }

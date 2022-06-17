@@ -2,9 +2,13 @@
 
 namespace App\Entity;
 
+use App\Enum\ContactType;
+
 final class User
 {
     /**
+     * автогенерируемый
+     *
      * @var string
      */
     private string $uid;
@@ -50,10 +54,36 @@ final class User
     }
 
     /**
+     * @return array
+     */
+    public function getActiveSettings(): array
+    {
+        return array_filter(
+            $this->settings,
+            static fn(UserSetting $userSetting): bool => $userSetting->isActive(),
+        );
+    }
+
+    /**
      * @return array<UserContact>
      */
     public function getContacts(): array
     {
         return $this->contacts;
+    }
+
+    /**
+     * @param ContactType $type
+     *
+     * @return UserContact | null
+     */
+    public function getContactByType(ContactType $type): ?UserContact
+    {
+        $filtered = array_filter(
+            $this->contacts,
+            static fn(UserContact $contact): bool => $contact->getType() === $type,
+        );
+
+        return empty($filtered) ? null : current($filtered);
     }
 }

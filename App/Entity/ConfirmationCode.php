@@ -10,6 +10,8 @@ use DateTimeImmutable;
 final class ConfirmationCode
 {
     /**
+     * автогенерируемый
+     *
      * @var int
      */
     private int $id;
@@ -58,6 +60,16 @@ final class ConfirmationCode
         $this->createdAt = $createdAt;
         $this->expiredAt = $expiredAt;
         $this->isActive = $isActive;
+    }
+
+    /**
+     * @return ConfirmationCode
+     */
+    public function deactivate(): self
+    {
+        $this->isActive = false;
+
+        return $this;
     }
 
     /**

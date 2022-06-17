@@ -12,4 +12,9 @@ interface ConfirmationCodeRepositoryInterface
      * @return ConfirmationCode
      */
     public function add(ConfirmationCode $code): ConfirmationCode;
+
+    /**
+     * @return void
+     */
+    public function flush(): void;
 }
